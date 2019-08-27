@@ -29,7 +29,7 @@ public class Card {
 	
 	public String toString()
 	{
-		return (cardCopies + name + set + num);
+		return (cardCopies + " " + name +" (" + set + ") " + num);
 	}
 	
 	

@@ -18,7 +18,7 @@ public class Deck {
 			tempDeck = tempDeck.substring(j + 1);
 			j = tempDeck.indexOf('\n');
 		}
-		
+		deckLength--;
 		//seperates out individual cards into card objects
 		cards = new Card[deckLength];
 		for(int i = 0; i < deckLength; i++)
@@ -36,7 +36,7 @@ public class Deck {
 		for(int i = 0; i < deckLength; i++)
 		{
 			if(i != 0)
-				result = "\n" + result + cards[i].toString();
+				result = result + '\n' + cards[i].toString();
 			else
 				result = cards[i].toString();
 		}
