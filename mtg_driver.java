@@ -1,18 +1,33 @@
+import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import java.io.*;
-import java.awt.*;
+import java.awt.datatransfer.Clipboard;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
-
-import java.io.PrintWriter;
     
 public class mtg_driver {
 
 	public static void main(String[] args) throws InterruptedException{
 		// TODO Auto-generated method stub
 
+		Scanner kb = new Scanner(System.in);
+		
+		boolean multiFile;
+		
+		System.out.println("Use one file for all decks? y/n");
+		String choice = kb.next();
+		if(choice.equalsIgnoreCase("y"))
+		{
+			multiFile = false;
+		}
+		else
+		{
+			multiFile = true;
+		}
 		System.out.println("Select Export Location");
 		String destination = LocationPrompt();
 		System.out.println(destination);
@@ -24,6 +39,8 @@ public class mtg_driver {
 
 		//checks the clipboard for a string every .25 sec, if the object is new
 		//and a string, adds a deck object
+		int counter = 1;
+		ArrayList<Deck> decksList = new ArrayList<>();
 		while(true)
 		{
 			Thread.sleep(250);
@@ -37,7 +54,10 @@ public class mtg_driver {
 					oldString = newString;
 					System.out.println("deck: " + newDeck.toString());
 					
-					exportToText(newDeck, destination);
+					if(multiFile)
+						exportToTextIndividual(newDeck, destination, counter);
+					else
+						decksList.add(newDeck);
 				}
 			}
 			catch(IOException e)
@@ -72,15 +92,35 @@ public class mtg_driver {
 		return path;
 	}
 	
-	private static void exportToText(Deck deck, String location)
+	private static void exportToTextIndividual(Deck deck, String location, int counter)
 	{
-		File exportedDeck = new File(location + ".txt");
+		
+		File exportedDeck = new File(location + "\\ArenaDecks" + counter + ".txt");
 		try
 		{
 			exportedDeck.createNewFile();
-			//PrintWriter writer = new PrintWriter(exportedDeck);
-			//writer.print(deck.toString());
-			//writer.close();
+			PrintWriter writer = new PrintWriter(exportedDeck);
+			writer.print(deck);
+			writer.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println("write error");
+		}
+		
+		
+		
+	}
+	
+	private static void exportToText(Deck deck, String location)
+	{
+		File exportedDeck = new File(location + "\\ArenaDecks.txt");
+		try
+		{
+			exportedDeck.createNewFile();
+			PrintWriter writer = new PrintWriter(exportedDeck);
+			writer.print(deck);
+			writer.close();
 		}
 		catch(Exception e)
 		{
