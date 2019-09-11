@@ -18,6 +18,7 @@ public class mtg_driver {
 		
 		boolean multiFile;
 		
+		//Get user input whether they want one big file or a few single file decks
 		System.out.println("Use one file for all decks? y/n");
 		String choice = kb.next();
 		if(choice.equalsIgnoreCase("y"))
@@ -28,6 +29,8 @@ public class mtg_driver {
 		{
 			multiFile = true;
 		}
+		
+		//get file export location from user
 		System.out.println("Select Export Location");
 		String destination = LocationPrompt();
 		System.out.println(destination);
@@ -37,8 +40,10 @@ public class mtg_driver {
 		boolean NASexception = false; //Not a String exception
 		String oldString = "";
 
+		
 		//checks the clipboard for a string every .25 sec, if the object is new
-		//and a string, adds a deck object
+		//and a string, adds a deck object TODO add checking to see if string is
+		//a deck in some way
 		int counter = 1;
 		ArrayList<Deck> decksList = new ArrayList<>();
 		while(true)
@@ -60,6 +65,7 @@ public class mtg_driver {
 						decksList.add(newDeck);
 				}
 			}
+			//catch NAS exceptions
 			catch(IOException e)
 			{
 				if(!NASexception)
@@ -69,7 +75,7 @@ public class mtg_driver {
 				}
 			}
 			
-			
+			//catch unsupported flavor excetions
 			catch(UnsupportedFlavorException e)
 			{
 				System.out.println("UnsupportedFlavorException");
@@ -78,6 +84,12 @@ public class mtg_driver {
 		
 	}
 	
+	
+	/*
+	 * Method puts out a file select box for the user to select
+	 * deck list download location
+	 * @return string representation of file path
+	 */
 	private static String LocationPrompt()
 	{
 		JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -92,6 +104,15 @@ public class mtg_driver {
 		return path;
 	}
 	
+	
+	/*
+	 * exports an individual deck to a single text doc, handles changing
+	 * file name slightly to not delete previous decks exported during
+	 * this session, e.g. ArenaDecks1, ArenaDecks2, etc.
+	 * @param deck to be exported
+	 * @param export location
+	 * @param what number deck is being exported with this method
+	 */
 	private static void exportToTextIndividual(Deck deck, String location, int counter)
 	{
 		
@@ -112,6 +133,7 @@ public class mtg_driver {
 		
 	}
 	
+	//TODO change this param deck to a list of decks
 	private static void exportToText(Deck deck, String location)
 	{
 		File exportedDeck = new File(location + "\\ArenaDecks.txt");

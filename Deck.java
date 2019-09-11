@@ -1,24 +1,40 @@
+/*
+ * Deck takes a string list of multiple cards,
+ * seperates them into individual card objects,
+ * and adds the cards to an array
+ */
+
 
 public class Deck {
 
 	Card cards[];
 	int deckLength;
 	
+	/*
+	 * takes in the list of cards, processes
+	 * the string into individual cards
+	 * stores in array
+	 */
 	public Deck(String deckString)
 	{
 		int lastNewLine = deckString.lastIndexOf('\n');
 		String tempDeck = new String("" + deckString);
-		int j = tempDeck.indexOf('\n');
+		int currPos = tempDeck.indexOf('\n');
 		deckLength = 0;
 		
 		//get the number of unique cards in the deck
-		while(j != -1)
+		//takes advantage of string indexOf function that,
+		//when it cannot find another of the char 
+		//specified, returns a -1  
+		while(currPos != -1)
 		{
 			deckLength++;
-			tempDeck = tempDeck.substring(j + 1);
-			j = tempDeck.indexOf('\n');
+			tempDeck = tempDeck.substring(currPos + 1);
+			currPos = tempDeck.indexOf('\n');
 		}
 		deckLength--;
+		
+		
 		//seperates out individual cards into card objects
 		cards = new Card[deckLength];
 		for(int i = 0; i < deckLength; i++)
@@ -30,6 +46,11 @@ public class Deck {
 		}
 	}
 	
+	/*
+	 * returns a formated string representation of
+	 * cards in a deck, same default formatting by Arena
+	 * client
+	 */
 	public String toString()
 	{
 		String result = "";
