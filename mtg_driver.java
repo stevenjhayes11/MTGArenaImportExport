@@ -25,6 +25,7 @@ public class mtg_driver{
 		//Get user input whether they want one big file or a few single file decks
 		//System.out.println("Use one file for all decks? y/n");
 		JFrame filePrompt = new JFrame("File Format");
+		filePrompt.setDefaultCloseOperation(filePrompt.DISPOSE_ON_CLOSE);
 		Object[] fileOptions = {"One File for All Decks", "One Deck Per File"};
 		int multiFileUserChoice = JOptionPane.showOptionDialog(filePrompt, "Do you want one file for all Decks or one file for each Deck? (Location prompt follows)" , "File Formats", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, /*icon choice*/ fileOptions, fileOptions[0]);
 		if(multiFileUserChoice == 0)
@@ -34,8 +35,28 @@ public class mtg_driver{
 		
 		//get file export location from user
 		String destination = LocationPrompt();
-		System.out.println(destination);
 		
+		processDeck deckChecker = new processDeck(multiFile, destination);
+		Thread playerDialogBox = new Thread(new WaitForPlayer());
+		deckChecker.start();
+		playerDialogBox.start();
+		boolean playerDialogAlive = true;
+		while(playerDialogAlive)
+		{
+			playerDialogAlive = playerDialogBox.isAlive();
+		}
+		if(!playerDialogAlive)
+		{
+			deckChecker.stopProcessing();
+		}
+
+		while(deckChecker.isAlive())
+		{
+			Thread.sleep(50);
+		}
+		System.out.println("ending");
+		//System.exit(0);
+		/*
 		//set up clipboard object
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 		boolean NASexception = false; //Not a String exception
@@ -92,7 +113,7 @@ public class mtg_driver{
 				System.out.println("UnsupportedFlavorException");
 			}
 		}
-		
+		*/
 		
 	}
 	

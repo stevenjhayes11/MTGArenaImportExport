@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class processDeck implements Runnable{
+public class processDeck extends Thread{
 
+	private boolean keepRunning;
 	Deck newDeck;
 	boolean multiFile;
 	String destination;
@@ -16,7 +17,14 @@ public class processDeck implements Runnable{
 	{
 		multiFile = multiFileChoice;
 		destination = fileDestination;
+		keepRunning = true;
 	}
+	
+	public void stopProcessing()
+	{
+		keepRunning = false;
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -27,7 +35,7 @@ public class processDeck implements Runnable{
 		String oldString = "";
 		int counter = 1;
 		ArrayList<Deck> decksList = new ArrayList<>();
-		while(true)
+		while(keepRunning)
 		{
 			try {
 				Thread.sleep(250);
@@ -45,8 +53,8 @@ public class processDeck implements Runnable{
 				{
 					newDeck = new Deck(newString);
 					oldString = newString;
-					
-					if(!multiFile)
+					System.out.println(newDeck.toString());
+					if(multiFile)
 						exportToTextIndividual(newDeck, destination, counter);
 					else //TODO add functionality to export decksList
 					{
@@ -103,6 +111,8 @@ public class processDeck implements Runnable{
 	//TODO change this param deck to a list of decks
 	private static void exportToText(ArrayList deck, String location)
 	{
+		System.out.println("deck:");
+		System.out.println(deck.toString());
 		File exportedDeck = new File(location + "\\ArenaDecks.txt");
 		try
 		{

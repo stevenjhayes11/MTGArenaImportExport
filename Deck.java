@@ -20,7 +20,7 @@ public class Deck {
 		int lastNewLine = deckString.lastIndexOf('\n');
 		String tempDeck = new String("" + deckString);
 		int currPos = tempDeck.indexOf('\n');
-		deckLength = 0;
+		deckLength = 1;
 		
 		//get the number of unique cards in the deck
 		//takes advantage of string indexOf function that,
@@ -32,7 +32,6 @@ public class Deck {
 			tempDeck = tempDeck.substring(currPos + 1);
 			currPos = tempDeck.indexOf('\n');
 		}
-		deckLength--;
 		
 		
 		//seperates out individual cards into card objects
@@ -40,7 +39,11 @@ public class Deck {
 		for(int i = 0; i < deckLength; i++)
 		{
 			int nextNewLine = deckString.indexOf('\n');
-			String newCard = deckString.substring(0,nextNewLine);
+			String newCard;
+			if(nextNewLine != -1)
+				newCard = deckString.substring(0,nextNewLine);
+			else
+				newCard = deckString;
 			cards[i] = new Card(newCard);
 			deckString = deckString.substring(nextNewLine + 1);
 		}
@@ -53,6 +56,7 @@ public class Deck {
 	 */
 	public String toString()
 	{
+		System.out.println("deckLength: " + deckLength);
 		String result = "";
 		for(int i = 0; i < deckLength; i++)
 		{
