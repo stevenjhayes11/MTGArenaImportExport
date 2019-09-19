@@ -18,12 +18,9 @@ public class mtg_driver{
 	public static void main(String[] args) throws InterruptedException{
 		// TODO Auto-generated method stub
 
-		Scanner kb = new Scanner(System.in);
-		
 		boolean multiFile;
 		
-		//Get user input whether they want one big file or a few single file decks
-		//System.out.println("Use one file for all decks? y/n");
+		//Get user input whether they want one big file or a multiple files each with a single deck
 		JFrame filePrompt = new JFrame("File Format");
 		filePrompt.setDefaultCloseOperation(filePrompt.DISPOSE_ON_CLOSE);
 		Object[] fileOptions = {"One File for All Decks", "One Deck Per File"};
@@ -36,84 +33,29 @@ public class mtg_driver{
 		//get file export location from user
 		String destination = LocationPrompt();
 		
+		//Start the Threads to wait for the player to indicate they are done and
+		//to process new decks as they are added to the clipboard
 		processDeck deckChecker = new processDeck(multiFile, destination);
 		Thread playerDialogBox = new Thread(new WaitForPlayer());
 		deckChecker.start();
 		playerDialogBox.start();
+		
+		//if the dialog box that asks if the player is done is closed, then the
+		//deck checker also shuts down
 		boolean playerDialogAlive = true;
 		while(playerDialogAlive)
 		{
+			Thread.sleep(100);
 			playerDialogAlive = playerDialogBox.isAlive();
 		}
 		if(!playerDialogAlive)
-		{
 			deckChecker.stopProcessing();
-		}
-
-		while(deckChecker.isAlive())
-		{
-			Thread.sleep(50);
-		}
-		System.out.println("ending");
-		//System.exit(0);
-		/*
-		//set up clipboard object
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-		boolean NASexception = false; //Not a String exception
-
 		
-		//checks the clipboard for a string every .25 sec, if the object is new
-		//and a string, adds a deck object TODO add checking to see if string is
-		//a deck in some way
-		String oldString = "";
-		int counter = 1;
-		ArrayList<Deck> decksList = new ArrayList<>();
-		while(true)
-		{
-			
-			Thread.sleep(250);
-			try
-			{	
-				Deck newDeck;
-				String newString = cb.getData(DataFlavor.stringFlavor).toString();
-				if(!(oldString.equals(newString)) && !NASexception)
-				{
-					newDeck = new Deck(newString);
-					oldString = newString;
-					
-					if(!multiFile)
-						exportToTextIndividual(newDeck, destination, counter);
-					else //TODO add functionality to export decksList
-					{
-						System.out.println("decks: \n");
-						decksList.add(newDeck);
-						for(int i = 0; i < decksList.size(); i++)
-						{
-							System.out.println("current deck list");
-							System.out.println(decksList.get(i).toString());
-						}
-					}
-						
-				}
-			}
-			//catch NAS exceptions
-			
-			catch(IOException e)
-			{
-				if(!NASexception)
-				{
-					System.out.println("not a valid String");
-					NASexception = true;
-				}
-			}
-			
-			//catch unsupported flavor excetions
-			catch(UnsupportedFlavorException e)
-			{
-				System.out.println("UnsupportedFlavorException");
-			}
-		}
-		*/
+		//gives deckChecker thread time to finish any leftover tasks before closing
+		while(deckChecker.isAlive())
+			Thread.sleep(50);
+		System.out.println("ending");
+		
 		
 	}
 	
@@ -146,7 +88,7 @@ public class mtg_driver{
 	 * @param export location
 	 * @param what number deck is being exported with this method
 	 */
-	private static void exportToTextIndividual(Deck deck, String location, int counter)
+	/*private static void exportToTextIndividual(Deck deck, String location, int counter)
 	{
 		
 		File exportedDeck = new File(location + "\\ArenaDecks" + counter + ".txt");
@@ -166,7 +108,7 @@ public class mtg_driver{
 		
 	}
 	
-	//TODO change this param deck to a list of decks
+	
 	private static void exportToText(ArrayList deck, String location)
 	{
 		File exportedDeck = new File(location + "\\ArenaDecks.txt");
@@ -189,7 +131,7 @@ public class mtg_driver{
 		
 		
 		
-	}
+	}*/
 	
 	
 }

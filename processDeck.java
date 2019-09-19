@@ -1,4 +1,5 @@
 import java.awt.Toolkit;
+import java.awt.datatransfer.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -29,48 +30,54 @@ public class processDeck extends Thread{
 	public void run() {
 		// TODO Auto-generated method stub
 		
+		//get the system clipboard and set it to a blank string
+		//so there is no remnant on the clipboard from before 
+		//program started
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection blankCB = new StringSelection("");
+		cb.setContents(blankCB, null);
 		boolean NASexception = false;
 		
 		String oldString = "";
 		int counter = 1;
 		ArrayList<Deck> decksList = new ArrayList<>();
+		
+		//until keepRunning is set to false by driver, keep listening
+		//for new decks to put in the list
 		while(keepRunning)
 		{
+			//sleep so the while loop doesn't consume anything the system
+			//allows it to have
 			try {
-				Thread.sleep(250);
+				Thread.sleep(100);
 			}
 			catch(InterruptedException e)
 			{
 				System.out.println("Sleep Interrupt");
 			}
 			
+			//check cb to see if there is a new deck
 			try
 			{	
-				Deck newDeck;
 				String newString = cb.getData(DataFlavor.stringFlavor).toString();
+				Deck newDeck;
+				
+				//if there is a new deck then either add to deckList or
+				//create a new text file with exportToTextIndividual
 				if(!(oldString.equals(newString)) && !NASexception)
 				{
 					newDeck = new Deck(newString);
 					oldString = newString;
-					System.out.println(newDeck.toString());
 					if(multiFile)
-						exportToTextIndividual(newDeck, destination, counter);
-					else //TODO add functionality to export decksList
-					{
-						System.out.println("decks: \n");
+						exportToTextIndividual(newDeck, destination, counter++);
+					else
 						decksList.add(newDeck);
-						for(int i = 0; i < decksList.size(); i++)
-						{
-							System.out.println("current deck list");
-							System.out.println(decksList.get(i).toString());
-						}
-					}
-						
 				}
 			}
-			//catch NAS exceptions
 			
+			
+			//catch NAS exceptions
+			//This might be redundant with the UnsupportedFlavorException?
 			catch(IOException e)
 			{
 				if(!NASexception)
@@ -80,14 +87,26 @@ public class processDeck extends Thread{
 				}
 			}
 			
-			//catch unsupported flavor excetions
+			//catch unsupported flavor exceptions, dont do anything with them for now
 			catch(UnsupportedFlavorException e)
 			{
-				System.out.println("UnsupportedFlavorException");
+				
 			}
+		}
+		//after all decks have been added to deckList, call 
+		//single text file export method
+		if(!multiFile)
+		{
+			exportToText(decksList, destination);
 		}
 	}
 	
+	/*
+	 * Exports a single deck to a uniquely named file
+	 * @param Deck to be exported
+	 * @param location for text file to be made
+	 * @param number of decks already made so a unique file name can be made
+	 */
 	private static void exportToTextIndividual(Deck deck, String location, int counter)
 	{
 		
@@ -108,11 +127,13 @@ public class processDeck extends Thread{
 		
 	}
 	
-	//TODO change this param deck to a list of decks
+	/*
+	 * Exports a list of decks to a single text file
+	 * @param Array List of decks
+	 * @param location to create text file
+	 */
 	private static void exportToText(ArrayList deck, String location)
 	{
-		System.out.println("deck:");
-		System.out.println(deck.toString());
 		File exportedDeck = new File(location + "\\ArenaDecks.txt");
 		try
 		{
@@ -121,7 +142,7 @@ public class processDeck extends Thread{
 			for(int i = 0; i < deck.size(); i++)
 			{
 				writer.print(deck.get(i));
-				writer.print('\n');
+				writer.print("\n\n");
 			}
 				
 			writer.close();

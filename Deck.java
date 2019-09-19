@@ -56,7 +56,6 @@ public class Deck {
 	 */
 	public String toString()
 	{
-		System.out.println("deckLength: " + deckLength);
 		String result = "";
 		for(int i = 0; i < deckLength; i++)
 		{
